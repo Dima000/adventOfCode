@@ -8,9 +8,9 @@ day1.task(2, task2);
 
 
 function task1(data) {
-
+  return data;
 }
 
 function task2(data) {
-
+  return data;
 }
