@@ -1,8 +1,4 @@
 <main>
-<style>
-.calendar .calendar-s { color: #333; }
-.calendar a .calendar-t { color:#cccccc; }
-</style>
 <pre class="calendar"><span class="calendar-day25">                   <span class="calendar-s">.</span>      <span class="calendar-s">.</span>                    <span class="calendar-s">.</span>   <span class="calendar-day">25</span></span>
 <span class="calendar-day24"><span class="calendar-s">.</span>       <span class="calendar-s">.</span>              <span class="calendar-s">.</span>                     <span class="calendar-s">.</span>     <span class="calendar-day">24</span></span>
 <span class="calendar-day23">    <span class="calendar-s">.</span><span class="calendar-s">.</span>      <span class="calendar-s">.</span><span class="calendar-s">.</span>                  <span class="calendar-s">.</span>        <span class="calendar-s">.</span> <span class="calendar-s">.</span>       <span class="calendar-day">23</span></span>
