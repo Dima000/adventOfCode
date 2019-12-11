@@ -1,6 +1,22 @@
+const fs = require('fs');
+let withLogs = false;
+let fileStream = null;
+
+function addLogs() {
+  withLogs = true;
+  fileStream = fs.createWriteStream('output.txt');
+
+  return () => {
+    fileStream.end();
+    withLogs = false
+  }
+}
+
+
 const HALT = 99;
 const IMMEDIATE = 1;
 const RELATIVE_BASE = 2;
+
 const CODES = {
   1: {
     name: 'add',
@@ -10,6 +26,11 @@ const CODES = {
       let b = paramValue(regs, n, 2, relativeBase);
       let c = paramValue(regs, n, 3, relativeBase, true);
       regs[c] = a + b;
+
+      if (withLogs) {
+        fileStream.write(`Op: ${regs[n]}  a: ${a}  b: ${b}  c: ${c}`);
+        fileStream.write('\n');
+      }
     }
   },
   2: {
@@ -20,21 +41,38 @@ const CODES = {
       let b = paramValue(regs, n, 2, relativeBase);
       let c = paramValue(regs, n, 3, relativeBase, true);
       regs[c] = a * b;
+
+      if (withLogs) {
+        fileStream.write(`Op: ${regs[n]}  a: ${a}  b: ${b}  c: ${c}`);
+        fileStream.write('\n');
+      }
     }
   },
   3: {
     name: 'set',
     params: 2,
     func: (n, regs, IO, relativeBase) => {
-      let index = paramValue(regs, n, 1, relativeBase, true);
-      regs[index] = IO;
+      let a = paramValue(regs, n, 1, relativeBase, true);
+      regs[a] = IO;
+
+      if (withLogs) {
+        fileStream.write(`Op: ${regs[n]}  a: ${a} input: ${IO}`);
+        fileStream.write('\n');
+      }
     }
   },
   4: {
     name: 'get',
     params: 2,
     func: (n, regs, IO, relativeBase) => {
-      return { output: paramValue(regs, n, 1, relativeBase) };
+      let a = paramValue(regs, n, 1, relativeBase);
+
+      if (withLogs) {
+        fileStream.write(`Op: ${regs[n]}  a: ${a}`);
+        fileStream.write('\n');
+      }
+
+      return { output: a };
     }
   },
   5: {
@@ -43,6 +81,11 @@ const CODES = {
     func: (n, regs, IO, relativeBase) => {
       let a = paramValue(regs, n, 1, relativeBase);
       let b = paramValue(regs, n, 2, relativeBase);
+
+      if (withLogs) {
+        fileStream.write(`Op: ${regs[n]}  a: ${a}  b: ${b}`);
+        fileStream.write('\n');
+      }
       if (a) {
         return { jump: b };
       }
@@ -54,6 +97,12 @@ const CODES = {
     func: (n, regs, IO, relativeBase) => {
       let a = paramValue(regs, n, 1, relativeBase);
       let b = paramValue(regs, n, 2, relativeBase);
+
+      if (withLogs) {
+        fileStream.write(`Op: ${regs[n]}  a: ${a}  b: ${b}`);
+        fileStream.write('\n');
+      }
+
       if (!a) {
         return { jump: b };
       }
@@ -67,6 +116,11 @@ const CODES = {
       let b = paramValue(regs, n, 2, relativeBase);
       let c = paramValue(regs, n, 3, relativeBase, true);
       regs[c] = a < b ? 1 : 0;
+
+      if (withLogs) {
+        fileStream.write(`Op: ${regs[n]}  a: ${a}  b: ${b}  c: ${c}`);
+        fileStream.write('\n');
+      }
     }
   },
   8: {
@@ -77,13 +131,25 @@ const CODES = {
       let b = paramValue(regs, n, 2, relativeBase);
       let c = paramValue(regs, n, 3, relativeBase, true);
       regs[c] = a === b ? 1 : 0;
+
+      if (withLogs) {
+        fileStream.write(`Op: ${regs[n]}  a: ${a}  b: ${b}  c: ${c}`);
+        fileStream.write('\n');
+      }
     }
   },
   9: {
     name: 'relative-base',
     params: 2,
     func: (n, regs, IO, relativeBase) => {
-      return { 'relative-base': relativeBase + paramValue(regs, n, 1, relativeBase) };
+      let a = paramValue(regs, n, 1, relativeBase);
+
+      if (withLogs) {
+        fileStream.write(`Op: ${regs[n]}  a: ${a}`);
+        fileStream.write('\n');
+      }
+
+      return { 'relative-base': relativeBase + a };
     }
   }
 };
@@ -108,5 +174,6 @@ function paramValue(regs, index, paramNr, relativeBase, returnPointer) {
 module.exports = {
   HALT,
   IMMEDIATE,
-  CODES
+  CODES,
+  addLogs
 };

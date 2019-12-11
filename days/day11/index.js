@@ -1,9 +1,10 @@
 let path = require('path');
 let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
 const Amplifier = require(path.join(__dirname, '..', '..', 'helpers', 'Amplifier'));
+const { addLogs } = require(path.join(__dirname, '..', '..', 'helpers', 'intCodeCalculator'));
 const { printGraphMatrix } = require(path.join(__dirname, '..', '..', 'helpers', 'matrix'));
 
-let isTest = false;
+let isTest = true;
 
 let ORIENTATION = ['U', 'R', 'D', 'L'];
 let DIRECTIONS = {
@@ -47,7 +48,11 @@ function task1(data) {
 }
 
 function task2(data) {
+  const stopLogs = addLogs();
+
   let map = paint(data, 1);
+
+  stopLogs();
 
   for (let [key, value] of Object.entries(map)) {
     if (value === 1) {
