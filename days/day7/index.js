@@ -2,22 +2,26 @@ let path = require('path');
 let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
 let _ = require('lodash');
 const { permutator } = require(path.join(__dirname, '..', '..', 'helpers', 'general'));
-const { CODES, HALT, IMMEDIATE } = require('./intCodeCalculator');
+const Amplifier = require('../../helpers/Amplifier');
 
 let isTest = false;
 
 function task1(data) {
-  const regsData = data.trim().split(',').map(n => +n);
+  const regs = data.trim().split(',').map(n => +n);
   const sequences = permutator([0, 1, 2, 3, 4]);
 
   let max = 0;
   let winning = null;
   for (let seq of sequences) {
     let baseInput = 0;
-    let regs = [...regsData];
+    let regsData = [...regs];
 
     for (let i = 0; i < 5; i++) {
-      baseInput = runIntCode(regs, baseInput, seq[i])
+      const amp = new Amplifier(0, regs);
+      const run = amp.run(baseInput, seq[i], regsData);
+      if (!run.halt) {
+        baseInput = run.output;
+      }
     }
 
     if (baseInput > max) {
@@ -30,35 +34,41 @@ function task1(data) {
 }
 
 function task2(data) {
-}
+  const regs = data.trim().split(',').map(n => +n);
+  const sequences = permutator([5, 6, 7, 8, 9]);
+  let max = 0;
+  let winning = null;
 
-function runIntCode(regs, baseInput, sequenceInput) {
-  let sequenceInputRead = false;
-  let output = '';
+  for (let seq of sequences) {
+    let aIndex = 0;
+    let input = 0;
+    let run = 0;
+    const amps = seq.map((seqNumber, index) => new Amplifier(index, regs));
 
-  let index = 0;
-  let op = regs[0];
-  while (op !== HALT) {
-    const code = CODES[op % 100];
-    let input = !sequenceInputRead ? sequenceInput : baseInput;
-    if (code.name === 'set') {
-      sequenceInputRead = true;
+    while (1) {
+      const newInput = amps[aIndex].run(input, seq[aIndex]);
+
+      if (newInput.halt && aIndex === 4) {
+        break;
+      } else {
+        if (!newInput.halt) {
+          input = newInput.output;
+        }
+        aIndex = (aIndex + 1) % 5
+      }
+      run += 1;
     }
 
-    const result = code.func(index, regs, input);
-    index = result && result.hasOwnProperty('jump') ? result.jump : index + code.params;
-
-    if (result && result.hasOwnProperty('output')) {
-      return result.output;
+    if (input > max) {
+      max = input;
+      winning = seq;
     }
-
-    op = regs[index];
   }
 
-  return output;
+  console.log('Max', max, 'Sequence', winning);
+  return max;
 }
-
 
 const day = new Day(7, isTest);
 day.task(1, task1);
-// day.task(2, task2);
+day.task(2, task2);

@@ -2,9 +2,9 @@ const fs = require('fs');
 let withLogs = false;
 let fileStream = null;
 
-function addLogs() {
+function addLogs(filename) {
   withLogs = true;
-  fileStream = fs.createWriteStream('output.txt');
+  fileStream = fs.createWriteStream(filename);
 
   return () => {
     fileStream.end();
