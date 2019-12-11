@@ -17,8 +17,8 @@ function task1(data) {
     let regsData = [...regs];
 
     for (let i = 0; i < 5; i++) {
-      const amp = new Amplifier(0, regs);
-      const run = amp.run(baseInput, seq[i], regsData);
+      const amp = new Amplifier(0, regs, seq[i]);
+      const run = amp.run(baseInput, regsData);
       if (!run.halt) {
         baseInput = run.output;
       }
@@ -43,10 +43,10 @@ function task2(data) {
     let aIndex = 0;
     let input = 0;
     let run = 0;
-    const amps = seq.map((seqNumber, index) => new Amplifier(index, regs));
+    const amps = seq.map((seqNumber, index) => new Amplifier(index, regs, seqNumber));
 
     while (1) {
-      const newInput = amps[aIndex].run(input, seq[aIndex]);
+      const newInput = amps[aIndex].run(input);
 
       if (newInput.halt && aIndex === 4) {
         break;

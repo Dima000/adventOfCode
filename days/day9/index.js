@@ -6,16 +6,16 @@ let isTest = false;
 
 function runDay(data, initialInput) {
   const regs = data.split(',').map(n => +n);
-  let intCode = new Amplifier(0, regs, initialInput);
+  let intCode = new Amplifier(0, regs);
 
   let output = null;
   while (1) {
-    const result = intCode.run();
-    if (result === 'halt') {
+    const result = intCode.run(initialInput);
+    if (result.halt) {
       return output;
     }
 
-    output = result;
+    output = result.output;
     console.log(output);
   }
 

@@ -2,31 +2,31 @@ const { CODES, HALT } = require('./intCodeCalculator');
 const _ = require('lodash');
 
 class Amplifier {
-  constructor(name, regs) {
+  constructor(name, regs, phase) {
     this.name = name;
     this.regs = [...regs];
     this.position = 0;
     this.relativeBase = 0;
-    this.input = null;
-    this.initialized = false;
+
+    this.phase = phase;
+    this.initialized = !_.isNumber(phase);
   }
 
-  run(input, sequenceNumber, regsData) {
+  run(input, regsData) {
     const regs = regsData || this.regs;
 
     let op = regs[this.position];
     while (op !== HALT) {
       const code = CODES[op % 100];
-      this.input = this.initialized ? input : sequenceNumber;
+      const localInput = !this.initialized ? this.phase : input;
       if (code.name === 'set') {
         this.initialized = true;
-
       }
-      const result = code.func(this.position, regs, this.input, this.relativeBase);
+
+      const result = code.func(this.position, regs, localInput, this.relativeBase);
       this.position = result && result.hasOwnProperty('jump') ? result.jump : this.position + code.params;
 
       if (result && result.hasOwnProperty('output')) {
-        this.input = null;
         return { halt: false, output: result.output };
       }
 
@@ -39,7 +39,6 @@ class Amplifier {
 
     return { halt: true };
   }
-
 }
 
 module.exports = Amplifier;

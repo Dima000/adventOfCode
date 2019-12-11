@@ -4,7 +4,7 @@ const Amplifier = require(path.join(__dirname, '..', '..', 'helpers', 'Amplifier
 const { addLogs } = require(path.join(__dirname, '..', '..', 'helpers', 'intCodeCalculator'));
 const { printGraphMatrix } = require(path.join(__dirname, '..', '..', 'helpers', 'matrix'));
 
-let isTest = true;
+let isTest = false;
 
 let ORIENTATION = ['U', 'R', 'D', 'L'];
 let DIRECTIONS = {
@@ -23,14 +23,14 @@ function paint(data, startInput) {
   let intCode = new Amplifier(0, regs);
   while (1) {
     let key = `${x}#${y}`;
-    let color = intCode.run(map[key] || 0);
-    if (color === 'halt') {
+    let { halt, output } = intCode.run(map[key] || 0);
+    if (halt) {
       break;
     }
-    let turnLeft = intCode.run();
+    let turnLeft = intCode.run().output;
 
     // Update state values
-    map[key] = color;
+    map[key] = output;
     orientationIndex += turnLeft ? -1 : 1;
     orientationIndex = (orientationIndex + 4) % 4;
 
@@ -48,7 +48,7 @@ function task1(data) {
 }
 
 function task2(data) {
-  const stopLogs = addLogs();
+  const stopLogs = addLogs('output.txt');
 
   let map = paint(data, 1);
 
