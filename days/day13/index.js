@@ -24,10 +24,11 @@ function task1(data) {
     const i = +intCode.run().output;
     const item = +intCode.run().output;
 
-    let key = `${i}#${j}`;
+    let key = `${j}#${i}`;
     matrix[key] = item;
   }
 
+  printGraphMatrix(matrix, true, { 0: ' ', 3: '_', 4: '\u25CF' });
   return Object.values(matrix).filter(n => n === 2).length;
 }
 
