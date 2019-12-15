@@ -1,6 +1,7 @@
 let path = require('path');
 const { logResult } = require(path.join(__dirname, 'general'));
 const readFile = require(path.join(__dirname, 'readFile'));
+const _ = require('lodash');
 
 class Day {
   constructor(dayNumber, isTest) {
