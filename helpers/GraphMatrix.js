@@ -28,6 +28,10 @@ class GraphMatrix {
     return { x, y };
   }
 
+  entries() {
+    return Object.entries(this.matrix);
+  }
+
   fillMissing(missingChar) {
     let maxX = 0;
     let maxY = 0;

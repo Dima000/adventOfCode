@@ -41,7 +41,7 @@ function printGraphMatrix(matrix, normalDir, replaces = {}, separator = '#') {
   if (!normalDir) {
     for (let y = maxY; y >= minY; y--) {
       for (let x = maxX; x >= minX; x--) {
-        process.stdout.write(matrix[`${x}${separator}${y}`].toString() || ' ')
+        process.stdout.write((matrix[`${x}${separator}${y}`] || ' ').toString())
       }
       console.log();
     }
