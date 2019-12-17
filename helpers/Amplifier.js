@@ -10,17 +10,22 @@ class Amplifier {
 
     this.phase = phase;
     this.initialized = !_.isNumber(phase);
+    this.inputIndex = 0;
   }
 
-  run(input, regsData) {
+  run(input, regsData, isInputArray) {
     const regs = regsData || this.regs;
 
     let op = regs[this.position];
     while (op !== HALT) {
       const code = CODES[op % 100];
-      const localInput = !this.initialized ? this.phase : input;
+      let localInput = !this.initialized ? this.phase : input;
+      if (isInputArray) {
+        localInput = input[this.inputIndex];
+      }
       if (code.name === 'set') {
         this.initialized = true;
+        this.inputIndex += 1;
       }
 
       const result = code.func(this.position, regs, localInput, this.relativeBase);

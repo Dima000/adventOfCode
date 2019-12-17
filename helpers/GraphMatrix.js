@@ -23,7 +23,7 @@ class GraphMatrix {
 
   findCoordinates(value) {
     const entry = Object.entries(this.matrix).find(entry => entry[1] === value);
-    const [x, y] = entry[0].split('#').map(n => +n);
+    const [y, x] = entry[0].split('#').map(n => +n);
 
     return { x, y };
   }
