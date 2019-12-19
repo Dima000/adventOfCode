@@ -21,15 +21,27 @@ class GraphMatrix {
     this.matrix[`${x}#${y}`] = value;
   }
 
+  increment(x, y) {
+    const value = this.get(x, y) || 0;
+    this.set(x, y, value + 1);
+  }
+
   findCoordinates(value) {
     const entry = Object.entries(this.matrix).find(entry => entry[1] === value);
-    const [y, x] = entry[0].split('#').map(n => +n);
+    if (!entry) {
+      return {};
+    }
 
+    const [y, x] = entry[0].split('#').map(n => +n);
     return { x, y };
   }
 
   entries() {
     return Object.entries(this.matrix);
+  }
+
+  clone() {
+    return Object.assign(Object.create(Object.getPrototypeOf(this)), this)
   }
 
   fillMissing(missingChar) {
