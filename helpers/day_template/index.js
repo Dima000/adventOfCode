@@ -1,5 +1,8 @@
 let path = require('path');
 let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
+let Matrix = require(path.join(__dirname, '..', '..', 'helpers', 'GraphMatrix'));
+let IntCode = require(path.join(__dirname, '..', '..', 'helpers', 'Amplifier'));
+let _ = require('lodash');
 
 let isTest = true;
 
@@ -12,6 +15,6 @@ function task2(data) {
 }
 
 
-const day1 = new Day(1, isTest);
+const day1 = new Day('.', isTest);
 day1.task(1, task1);
 day1.task(2, task2);
