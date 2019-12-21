@@ -4,18 +4,18 @@ const readFile = require(path.join(__dirname, 'readFile'));
 const _ = require('lodash');
 
 class Day {
-  constructor(dayNumber, isTest) {
+  constructor(dayNumber, isTest, noTrim) {
     this.dayNumber = dayNumber;
     this.isTest = isTest;
 
-    this.init();
+    this.init(noTrim);
   }
 
-  init() {
+  init(noTrim) {
     const fileName = this.isTest ? 'input.test.txt' : 'input.txt';
     let inputPath = path.join(__dirname, '..', 'days', `day${this.dayNumber}`, fileName);
 
-    this.data = readFile(inputPath);
+    this.data = readFile(inputPath, noTrim);
   }
 
   task(taskNumber, callback) {

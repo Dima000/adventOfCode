@@ -1,8 +1,13 @@
 let fs = require('fs');
 
-function readFile(filePath) {
+function readFile(filePath, noTrim) {
   try {
-    return fs.readFileSync(filePath, 'utf8').trim();
+    const data = fs.readFileSync(filePath, 'utf8');
+    if (noTrim) {
+      return data;
+    }
+
+    return data.trim();
   } catch (e) {
     console.error('Could not read file');
     console.error(e);
