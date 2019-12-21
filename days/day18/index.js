@@ -1,19 +1,13 @@
 let path = require('path');
 let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
 let Matrix = require(path.join(__dirname, '..', '..', 'helpers', 'GraphMatrix'));
+let { findAllAvailableKeys, findMain, findMinPath, resetPosition } = require('./main');
 let _ = require('lodash');
 
-let isTest = true;
+let isTest = false;
 
-const WALL = '#';
 const ENTRANCE = '@';
 const PATH = '.';
-let DIRECTIONS = {
-  UP: { name: 'up', offsetX: -1, offsetY: 0 },
-  DOWN: { name: 'down', offsetX: 1, offsetY: 0 },
-  LEFT: { name: 'left', offsetX: 0, offsetY: -1 },
-  RIGHT: { name: 'right', offsetX: 0, offsetY: 1 },
-};
 
 function task1(data) {
   const lines = data.split('\r\n');
@@ -36,90 +30,26 @@ function task1(data) {
   }
 
   matrix.set(j0, i0, PATH);
-  let min = {}
-  return findMain(matrix, { i: i0, j: j0 }, [], allKeys);
-}
-
-function findMain(matrix, { i, j }, foundKeys, allKeys) {
-  if (foundKeys.length === allKeys.length) {
-    return 0;
-  }
+  let minDepth = { depth: Number.MAX_SAFE_INTEGER };
 
   // find all available keys
-  const availableKeys = [];
-  findAllAvailableKeys(_.cloneDeep(matrix), i, j, availableKeys);
+  let minPaths = [];
+  findAllAvailableKeys(_.cloneDeep(matrix), i0, j0, minPaths, 0);
+  minPaths = _.sortBy(minPaths, 'min');
 
-  // Find minPath for every key
-  const minPaths = availableKeys.map(key => {
-    const min = findMinPath(_.cloneDeep(matrix), i, j, key, 0);
-    return { min, key }
-  });
 
-  // update map by removing the key and door and run sub-problem again
-  let minLocal = Number.MAX_SAFE_INTEGER;
-  minPaths.forEach(({ min, key }) => {
-    const nextMatrix = _.cloneDeep(matrix);
-    const coords = nextMatrix.findCoordinates(key);
-    resetPosition(nextMatrix, key);
-    resetPosition(nextMatrix, key.toUpperCase());
+  const { key, min } = minPaths[2];
+  const coords = matrix.findCoordinates(key);
+  resetPosition(matrix, key);
+  resetPosition(matrix, key.toUpperCase());
 
-    if (minLocal > min) {
-      const minKey = findMain(nextMatrix, { i: coords.x, j: coords.y }, [...foundKeys, key], allKeys);
-      minLocal = Math.min(minLocal, min + minKey);
-    }
-  });
+  console.time('Entry');
+  const res = findMain(matrix, coords.x, coords.y, [key], allKeys, min, minDepth, 6447);
+  return res + min;
 
-  return minLocal;
+  // return findMain(matrix, i0, j0, [], allKeys, 0, minDepth);
 }
 
-function findAllAvailableKeys(matrix, i, j, keys) {
-  let current = matrix.get(j, i);
-  if (current.isLowerCase()) {
-    keys.push(current);
-  }
-
-  matrix.set(j, i, WALL);
-
-  const allowedPositions = findNextPositions(matrix, i, j);
-
-  allowedPositions.forEach(pos => {
-    findAllAvailableKeys(matrix, pos.i, pos.j, keys);
-  })
-}
-
-function findMinPath(matrix, i, j, target, depth) {
-  const current = matrix.get(j, i);
-
-  if (current === target) {
-    return depth;
-  }
-
-  let nextPositions = findNextPositions(matrix, i, j);
-  matrix.set(j, i, WALL);
-
-  let min = Number.MAX_SAFE_INTEGER;
-  nextPositions.forEach(pos => {
-    const stepMin = findMinPath(matrix, pos.i, pos.j, target, depth + 1);
-    min = Math.min(min, stepMin);
-  });
-
-  return min;
-}
-
-function findNextPositions(matrix, i, j) {
-  return Object.values(DIRECTIONS)
-    .map(dir => ({ i: i + dir.offsetX, j: j + dir.offsetY }))
-    .filter(({ i, j }) => {
-      const char = matrix.get(j, i);
-      return char.isLowerCase() || char === PATH;
-    });
-}
-
-function resetPosition(matrix, char) {
-  const { x, y } = matrix.findCoordinates(char);
-  matrix.set(y, x, PATH);
-  return { i: x, j: y }
-}
 
 function task2(data) {
   return ''
