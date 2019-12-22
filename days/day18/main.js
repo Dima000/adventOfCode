@@ -4,6 +4,7 @@ let { isSuperSet, difference } = require(path.join(__dirname, '..', '..', 'helpe
 
 const WALL = '#';
 const START = '@';
+const ENTRANCE = '@';
 let DIRECTIONS = {
   UP: { name: 'up', offsetX: -1, offsetY: 0 },
   DOWN: { name: 'down', offsetX: 1, offsetY: 0 },
@@ -46,6 +47,79 @@ function findMain(allKeys, memory, current, i, j, found) {
   return _.min(results);
   // memory.set(memoryKey, min);
   // return min;
+}
+
+function findMainDijkstra(allKeys, matrix) {
+  let finalLength = Object.values(allKeys).length;
+  let { x, y } = matrix.findCoordinates(ENTRANCE);
+  let startNode = { key: ENTRANCE, i: x, j: y, depth: 0, found: [ENTRANCE], length: 1 };
+  let queue = [startNode];
+  let minDepth = Number.MAX_SAFE_INTEGER;
+  let memory = new Map();
+
+
+  while (queue.length > 0) {
+    // _.sortBy(queue, next => next.depth);
+    queue = _.orderBy(queue, ['length', 'depth'], ['desc', 'asc']);
+    let t = queue.shift();
+    let { key, found, depth } = t;
+
+    if (depth >= minDepth) {
+      continue;
+    }
+
+    // console.log('Key', key, 'found', found.join(), 'depth', depth);
+    if (found.length === finalLength) {
+      console.log('Solution found', depth, 'found', found.join());
+      minDepth = Math.min(minDepth, depth);
+      continue;
+    }
+
+    // find all available keys from current key
+    let validNextKeys;
+    const memoryKey = _.sortBy(found, i => i).join();
+
+    // return value from memory
+    // find all available keys from current key
+    validNextKeys = allKeys[key].filter(nextKey => {
+      if (_.includes(found, nextKey.key)) {
+        return false;
+      }
+
+      return isSuperSet(new Set(found), nextKey.doors);
+    });
+
+    let memKey = validNextKeys;
+    if (memory.has(memoryKey)) {
+      // console.log('Fetched next step from memory', memoryKey);
+      memKey = memory.get(memoryKey)
+    } else {
+      memory.set(memoryKey, memKey);
+    }
+
+    let real = validNextKeys.map(nextKey => `${found.join()}  ${nextKey.key}  ${nextKey.depth}`);
+    let memoryAr = memKey.map(nextKey => `${found.join()}  ${nextKey.key}  ${nextKey.depth}`);
+
+    console.log('Real', real);
+    console.log('Memory', memoryAr);
+    console.log()
+
+
+    for (let nextKey of validNextKeys) {
+      if (nextKey.depth + depth < minDepth) {
+        queue.push({
+          key: nextKey.key,
+          i: nextKey.i,
+          j: nextKey.j,
+          depth: nextKey.depth + depth,
+          found: [...found, nextKey.key],
+          length: found.length + 1
+        });
+      }
+    }
+  }
+
+  return minDepth;
 }
 
 function findPathToKeys(matrix, i, j, doors, keys, depth) {
@@ -112,5 +186,6 @@ String.prototype.isUpperCase = function () {
 module.exports = {
   findMain,
   findPathToKeys,
-  memoization
+  memoization,
+  findMainDijkstra
 };

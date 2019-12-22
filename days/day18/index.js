@@ -1,7 +1,7 @@
 let path = require('path');
 let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
 let Matrix = require(path.join(__dirname, '..', '..', 'helpers', 'GraphMatrix'));
-let { findPathToKeys, findMain, memoization } = require('./main');
+let { findPathToKeys, findMain, findMainDijkstra } = require('./main');
 let _ = require('lodash');
 
 let isTest = true;
@@ -34,11 +34,7 @@ function task1(data) {
 
   // console.log(allKeys);
 
-
-  //Run main loop, pass nodes instead of matrix, also use caching
-  const { x, y } = matrix.findCoordinates(ENTRANCE);
-
-  return findMain(allKeys, new Map(), ENTRANCE, x, y, []);
+  return findMainDijkstra(allKeys, matrix);
 }
 
 
