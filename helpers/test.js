@@ -1,27 +1,17 @@
-const data = `   11111111                                                            
-                                          111111111                                                           
-                                           111111111                                                          
-                                            111111111                                                         
-                                             111111111                                                        
-                                              111111111                                                       
-                                              1111111111                                                      
-                                               1111111111                                                     
-                                                1111111111                                                    
-                                                 1111111111                                                   
-                                                  1111111111                                                  
-                                                  11111111111                                                 
-                                                   11111111111                                                
-                                                    11111111111                                               
-                                                     11111111111                                              
-                                                     111111111111                                             
-                                                      111111111111                                            
-                                                       111111111111                                           
-                                                        111111111111                                          
-                                                         111111111111                                         
-                                                         1111111111111                                        
-                                                          1111111111111                                       
-                                                           1111111111111                                      
-                                                            1111111111111                                     
-                                                             1111111111111        `
+function isSuperset(set, subset) {
+  for (let elem of subset) {
+    if (!set.has(elem)) {
+      return false
+    }
+  }
+  return true
+}
 
-console.log(data.replace(/ /g, '').split('\n').length);
+const setA = new Set([1,2,3,4]);
+const setB = new Set([1,4]);
+
+console.log(setA)
+console.log(setB)
+
+console.log(isSuperset(setA, setB))
+console.log(isSuperset(setB, setA))

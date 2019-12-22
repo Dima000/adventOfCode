@@ -1,7 +1,9 @@
+let path = require('path');
 let _ = require('lodash');
+let { isSuperSet, difference } = require(path.join(__dirname, '..', '..', 'helpers', 'general'));
 
 const WALL = '#';
-const PATH = '.';
+const START = '@';
 let DIRECTIONS = {
   UP: { name: 'up', offsetX: -1, offsetY: 0 },
   DOWN: { name: 'down', offsetX: 1, offsetY: 0 },
@@ -9,46 +11,57 @@ let DIRECTIONS = {
   RIGHT: { name: 'right', offsetX: 0, offsetY: 1 },
 };
 
-function findMain(matrix, i, j, foundKeys, allKeys, depth, minDepth, HARD_LIMIT = Number.MAX_SAFE_INTEGER) {
-  if (foundKeys.length === allKeys.length) {
-    console.log('Solution', depth, minDepth.depth);
-    minDepth.depth = Math.min(depth, minDepth.depth);
+function findMain(allKeys, memory, current, i, j, found) {
+  found.push(current);
+
+  // // return value from memory
+  // const memoryKey = `${current}${found.length}`;
+  // if (memory.has(memoryKey)) {
+  //   console.log('Fetched from memory', memoryKey);
+  //   return memory.get(memoryKey)
+  // }
+
+  // find all available keys from current key
+  const validNextKeys = allKeys[current].filter(nextKey => {
+    if (_.includes(found, nextKey.key)) {
+      return false;
+    }
+
+    return isSuperSet(new Set(found), nextKey.doors);
+  });
+
+
+  if (validNextKeys.length === 0) {
+
+    console.log('Path Found', found.join());
+    console.log();
     return 0;
   }
 
-  // find all available keys
-  let minPaths = [];
-  findAllAvailableKeys(_.cloneDeep(matrix), i, j, minPaths, 0);
-  minPaths = _.sortBy(minPaths, 'min');
-
-  // console.log(minPaths);
-  // update map by removing the key and door and run sub-problem again
-  let minLocal = minDepth.depth;
-  minPaths.forEach(({ min, key }) => {
-    const nextMatrix = _.cloneDeep(matrix);
-    const coords = nextMatrix.findCoordinates(key);
-    const nextKeys = [...foundKeys, key];
-    resetPosition(nextMatrix, key);
-    resetPosition(nextMatrix, key.toUpperCase());
-
-    if (nextKeys.length === 8) {
-      console.log(nextKeys.join());
-      console.timeLog('Entry');
-    }
-
-    if (minLocal > min + depth && HARD_LIMIT > min + depth) {
-      const minKey = findMain(nextMatrix, coords.x, coords.y, nextKeys, allKeys, depth + min, minDepth);
-      minLocal = Math.min(minLocal, min + minKey);
-    }
+  // iterate next available keys
+  const results = validNextKeys.map(nextKey => {
+    return nextKey.depth + findMain(allKeys, memory, nextKey.key, nextKey.i, nextKey.j, [...found]);
   });
 
-  return minLocal;
+  return _.min(results);
+  // memory.set(memoryKey, min);
+  // return min;
 }
 
-function findAllAvailableKeys(matrix, i, j, keys, depth) {
+function findPathToKeys(matrix, i, j, doors, keys, depth) {
   let current = matrix.get(j, i);
-  if (current.isLowerCase()) {
-    keys.push({ key: current, min: depth });
+  if (current.isLowerCase() || current === START) {
+    keys.push({
+      key: current,
+      i,
+      j,
+      depth,
+      doors: new Set(doors),
+      doorsStr: doors.join()
+    });
+  }
+  if (current.isUpperCase()) {
+    doors.push(current.toLowerCase());
   }
 
   matrix.set(j, i, WALL);
@@ -56,7 +69,7 @@ function findAllAvailableKeys(matrix, i, j, keys, depth) {
   const allowedPositions = findNextPositions(matrix, i, j);
 
   allowedPositions.forEach(pos => {
-    findAllAvailableKeys(matrix, pos.i, pos.j, keys, depth + 1);
+    findPathToKeys(matrix, pos.i, pos.j, [...doors], keys, depth + 1);
   })
 }
 
@@ -65,22 +78,39 @@ function findNextPositions(matrix, i, j) {
     .map(dir => ({ i: i + dir.offsetX, j: j + dir.offsetY }))
     .filter(({ i, j }) => {
       const char = matrix.get(j, i);
-      return char.isLowerCase() || char === PATH;
+      return char !== WALL;
     });
 }
 
-function resetPosition(matrix, char) {
-  const { x, y } = matrix.findCoordinates(char);
-  matrix.set(y, x, PATH);
-  return { i: x, j: y }
+function memoization(allKeys) {
+  let memory = {};
+
+  return function (found, callback) {
+    let remaining = Array.from(difference(allKeys, found));
+    // remaining.sort();
+    let key = remaining.join();
+
+    if (_.isNumber(memory[key])) {
+      console.log('Call memory', key);
+      return memory[key];
+    } else {
+      const result = callback();
+      memory[key] = result;
+      console.log('Save to Memory', 'key', key, 'result', result);
+      return result;
+    }
+  };
 }
 
 String.prototype.isLowerCase = function () {
   return /^[a-z]*$/.test(this)
 };
+String.prototype.isUpperCase = function () {
+  return /^[A-Z]*$/.test(this)
+};
 
 module.exports = {
   findMain,
-  findAllAvailableKeys,
-  resetPosition
+  findPathToKeys,
+  memoization
 };

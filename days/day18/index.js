@@ -1,53 +1,44 @@
 let path = require('path');
 let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
 let Matrix = require(path.join(__dirname, '..', '..', 'helpers', 'GraphMatrix'));
-let { findAllAvailableKeys, findMain, findMinPath, resetPosition } = require('./main');
+let { findPathToKeys, findMain, memoization } = require('./main');
 let _ = require('lodash');
 
-let isTest = false;
-
+let isTest = true;
 const ENTRANCE = '@';
-const PATH = '.';
 
 function task1(data) {
   const lines = data.split('\r\n');
-  let i0, j0;
   let allKeys = [];
   let matrix = new Matrix();
 
   for (let i = 0; i < lines.length; i++) {
     for (let j = 0; j < lines[0].length; j++) {
       const char = lines[i][j];
-      if (char === ENTRANCE) {
-        i0 = i;
-        j0 = j;
-      } else if (char.isLowerCase()) {
-        allKeys.push(char);
+      if (char.isLowerCase() || char === ENTRANCE) {
+        allKeys.push({ key: char, i, j });
       }
 
       matrix.set(j, i, char);
     }
   }
 
-  matrix.set(j0, i0, PATH);
-  let minDepth = { depth: Number.MAX_SAFE_INTEGER };
+  // Find path from a key to all other keys. Treat start as a key
+  allKeys = allKeys.reduce((res, key) => {
+    const nextKeys = [];
+    findPathToKeys(_.cloneDeep(matrix), key.i, key.j, [], nextKeys, 0);
 
-  // find all available keys
-  let minPaths = [];
-  findAllAvailableKeys(_.cloneDeep(matrix), i0, j0, minPaths, 0);
-  minPaths = _.sortBy(minPaths, 'min');
+    res[key.key] = nextKeys;
+    return res;
+  }, {});
+
+  // console.log(allKeys);
 
 
-  const { key, min } = minPaths[2];
-  const coords = matrix.findCoordinates(key);
-  resetPosition(matrix, key);
-  resetPosition(matrix, key.toUpperCase());
+  //Run main loop, pass nodes instead of matrix, also use caching
+  const { x, y } = matrix.findCoordinates(ENTRANCE);
 
-  console.time('Entry');
-  const res = findMain(matrix, coords.x, coords.y, [key], allKeys, min, minDepth, 6447);
-  return res + min;
-
-  // return findMain(matrix, i0, j0, [], allKeys, 0, minDepth);
+  return findMain(allKeys, new Map(), ENTRANCE, x, y, []);
 }
 
 

@@ -40,6 +40,34 @@ function permutator(inputArr) {
   return result;
 }
 
+function isSuperSet(set, subset) {
+  for (let elem of subset) {
+    if (!set.has(elem)) {
+      return false
+    }
+  }
+  return true
+}
+
+function union(setA, setB) {
+  let _union = new Set(setA)
+  for (let elem of setB) {
+    _union.add(elem)
+  }
+  return _union
+}
+
+function difference(setA, setB) {
+  let _difference = new Set(setA)
+  for (let elem of setB) {
+    _difference.delete(elem)
+  }
+  return _difference
+}
+
 module.exports.logResult = logResult;
 module.exports.digitArray = digitArray;
 module.exports.permutator = permutator;
+module.exports.isSuperSet = isSuperSet;
+module.exports.union = union;
+module.exports.difference = difference;
