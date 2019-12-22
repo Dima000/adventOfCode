@@ -55,8 +55,8 @@ function findMainDijkstra(allKeys, matrix) {
   let startNode = { key: ENTRANCE, i: x, j: y, depth: 0, found: [ENTRANCE], length: 1 };
   let queue = [startNode];
   let minDepth = Number.MAX_SAFE_INTEGER;
+  let minPath;
   let memory = new Map();
-
 
   while (queue.length > 0) {
     // _.sortBy(queue, next => next.depth);
@@ -64,24 +64,36 @@ function findMainDijkstra(allKeys, matrix) {
     let t = queue.shift();
     let { key, found, depth } = t;
 
-    if (depth >= minDepth) {
+    if (depth > minDepth) {
       continue;
     }
 
     // console.log('Key', key, 'found', found.join(), 'depth', depth);
     if (found.length === finalLength) {
       console.log('Solution found', depth, 'found', found.join());
+      if (depth < minDepth) {
+        minDepth = depth;
+        minPath = found;
+      }
+
       minDepth = Math.min(minDepth, depth);
       continue;
     }
 
     // find all available keys from current key
-    let validNextKeys;
-    const memoryKey = _.sortBy(found, i => i).join();
+    const sortedFound = _.sortBy(found, i => i).join();
+    const memoryKey = `${sortedFound}#${key}`;
 
-    // return value from memory
-    // find all available keys from current key
-    validNextKeys = allKeys[key].filter(nextKey => {
+    if (memory.has(memoryKey)) {
+      let memDepth = memory.get(memoryKey);
+      if (depth >= memDepth) {
+        continue;
+      }
+    }
+
+    memory.set(memoryKey, depth);
+
+    const validNextKeys = allKeys[key].filter(nextKey => {
       if (_.includes(found, nextKey.key)) {
         return false;
       }
@@ -89,33 +101,15 @@ function findMainDijkstra(allKeys, matrix) {
       return isSuperSet(new Set(found), nextKey.doors);
     });
 
-    let memKey = validNextKeys;
-    if (memory.has(memoryKey)) {
-      // console.log('Fetched next step from memory', memoryKey);
-      memKey = memory.get(memoryKey)
-    } else {
-      memory.set(memoryKey, memKey);
-    }
-
-    let real = validNextKeys.map(nextKey => `${found.join()}  ${nextKey.key}  ${nextKey.depth}`);
-    let memoryAr = memKey.map(nextKey => `${found.join()}  ${nextKey.key}  ${nextKey.depth}`);
-
-    console.log('Real', real);
-    console.log('Memory', memoryAr);
-    console.log()
-
-
     for (let nextKey of validNextKeys) {
-      if (nextKey.depth + depth < minDepth) {
-        queue.push({
-          key: nextKey.key,
-          i: nextKey.i,
-          j: nextKey.j,
-          depth: nextKey.depth + depth,
-          found: [...found, nextKey.key],
-          length: found.length + 1
-        });
-      }
+      queue.push({
+        key: nextKey.key,
+        i: nextKey.i,
+        j: nextKey.j,
+        depth: nextKey.depth + depth,
+        found: [...found, nextKey.key],
+        length: found.length + 1
+      });
     }
   }
 
@@ -156,26 +150,6 @@ function findNextPositions(matrix, i, j) {
     });
 }
 
-function memoization(allKeys) {
-  let memory = {};
-
-  return function (found, callback) {
-    let remaining = Array.from(difference(allKeys, found));
-    // remaining.sort();
-    let key = remaining.join();
-
-    if (_.isNumber(memory[key])) {
-      console.log('Call memory', key);
-      return memory[key];
-    } else {
-      const result = callback();
-      memory[key] = result;
-      console.log('Save to Memory', 'key', key, 'result', result);
-      return result;
-    }
-  };
-}
-
 String.prototype.isLowerCase = function () {
   return /^[a-z]*$/.test(this)
 };
@@ -184,8 +158,6 @@ String.prototype.isUpperCase = function () {
 };
 
 module.exports = {
-  findMain,
   findPathToKeys,
-  memoization,
   findMainDijkstra
 };

@@ -1,10 +1,10 @@
 let path = require('path');
 let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
 let Matrix = require(path.join(__dirname, '..', '..', 'helpers', 'GraphMatrix'));
-let { findPathToKeys, findMain, findMainDijkstra } = require('./main');
+let { findPathToKeys, findMainDijkstra } = require('./main');
 let _ = require('lodash');
 
-let isTest = true;
+let isTest = false;
 const ENTRANCE = '@';
 
 function task1(data) {
