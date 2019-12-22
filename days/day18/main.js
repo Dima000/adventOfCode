@@ -12,27 +12,32 @@ let DIRECTIONS = {
 };
 
 function findMain(allKeys, memory, current, i, j, found) {
-  found.push(current);
+  // return value from memory
+  let sortedFound = _.sortBy(found).join();
+  const memoryKey = `${sortedFound}#${current}`;
+  let validNextKeys;
 
-  // // return value from memory
-  // const memoryKey = `${current}${found.length}`;
-  // if (memory.has(memoryKey)) {
-  //   console.log('Fetched from memory', memoryKey);
-  //   return memory.get(memoryKey)
-  // }
+  if (memory.has(memoryKey)) {
+    console.log('Fetched from memory', memoryKey);
+    validNextKeys = memory.get(memoryKey);
+    found.push(current);
+  } else {
+    found.push(current);
 
-  // find all available keys from current key
-  const validNextKeys = allKeys[current].filter(nextKey => {
-    if (_.includes(found, nextKey.key)) {
-      return false;
-    }
+    // find all available keys from current key
+    validNextKeys = allKeys[current].filter(nextKey => {
+      if (_.includes(found, nextKey.key)) {
+        return false;
+      }
 
-    return isSuperSet(new Set(found), nextKey.doors);
-  });
+      return isSuperSet(new Set(found), nextKey.doors);
+    });
+
+    memory.set(memoryKey, validNextKeys);
+  }
 
 
   if (validNextKeys.length === 0) {
-
     console.log('Path Found', found.join());
     console.log();
     return 0;
@@ -44,8 +49,6 @@ function findMain(allKeys, memory, current, i, j, found) {
   });
 
   return _.min(results);
-  // memory.set(memoryKey, min);
-  // return min;
 }
 
 function findPathToKeys(matrix, i, j, doors, keys, depth) {
@@ -91,12 +94,10 @@ function memoization(allKeys) {
     let key = remaining.join();
 
     if (_.isNumber(memory[key])) {
-      console.log('Call memory', key);
       return memory[key];
     } else {
       const result = callback();
       memory[key] = result;
-      console.log('Save to Memory', 'key', key, 'result', result);
       return result;
     }
   };
