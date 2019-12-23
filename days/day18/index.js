@@ -4,7 +4,7 @@ let Matrix = require(path.join(__dirname, '..', '..', 'helpers', 'GraphMatrix'))
 let { findPathToKeys, findMainDijkstra, findMain } = require('./main');
 let _ = require('lodash');
 
-let isTest = true;
+let isTest = false;
 const ENTRANCE = '@';
 
 function task1(data) {
@@ -34,10 +34,9 @@ function task1(data) {
 
 
   // Run main loop, pass nodes instead of matrix, also use caching
-  const { x, y } = matrix.findCoordinates(ENTRANCE);
-
-  return findMain(allKeys, new Map(), ENTRANCE, x, y, []);
-  // return findMainDijkstra(allKeys, matrix);
+  // const { x, y } = matrix.findCoordinates(ENTRANCE);
+  // return findMain(allKeys, new Map(), ENTRANCE, x, y, []);
+  return findMainDijkstra(allKeys, matrix);
 }
 
 

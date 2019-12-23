@@ -1,6 +1,6 @@
 let path = require('path');
 let _ = require('lodash');
-let { isSuperSet, difference } = require(path.join(__dirname, '..', '..', 'helpers', 'general'));
+let { isSuperSet } = require(path.join(__dirname, '..', '..', 'helpers', 'general'));
 
 const WALL = '#';
 const START = '@';
@@ -45,6 +45,73 @@ function findMain(allKeys, memory, current, i, j, found) {
   let min = _.min(results);
   memory.set(memKey, min);
   return min;
+}
+
+function findMainDijkstra(allKeys, matrix) {
+  let finalLength = Object.values(allKeys).length;
+  let { x, y } = matrix.findCoordinates(ENTRANCE);
+  let startNode = { key: ENTRANCE, i: x, j: y, depth: 0, found: [ENTRANCE], length: 1 };
+  let queue = [startNode];
+  let minDepth = Number.MAX_SAFE_INTEGER;
+  let minPath;
+  let memory = new Map();
+
+  while (queue.length > 0) {
+    // _.sortBy(queue, next => next.depth);
+    queue = _.orderBy(queue, ['length', 'depth'], ['desc', 'asc']);
+    let t = queue.shift();
+    let { key, found, depth } = t;
+
+    if (depth > minDepth) {
+      continue;
+    }
+
+    // console.log('Key', key, 'found', found.join(), 'depth', depth);
+    if (found.length === finalLength) {
+      console.log('Solution found', depth, 'found', found.join());
+      if (depth < minDepth) {
+        minDepth = depth;
+        minPath = found;
+      }
+
+      minDepth = Math.min(minDepth, depth);
+      continue;
+    }
+
+    // find all available keys from current key
+    const sortedFound = _.sortBy(found, i => i).join();
+    const memoryKey = `${sortedFound}#${key}`;
+
+    if (memory.has(memoryKey)) {
+      let memDepth = memory.get(memoryKey);
+      if (depth >= memDepth) {
+        continue;
+      }
+    }
+
+    memory.set(memoryKey, depth);
+
+    const validNextKeys = allKeys[key].filter(nextKey => {
+      if (_.includes(found, nextKey.key)) {
+        return false;
+      }
+
+      return isSuperSet(new Set(found), nextKey.doors);
+    });
+
+    for (let nextKey of validNextKeys) {
+      queue.push({
+        key: nextKey.key,
+        i: nextKey.i,
+        j: nextKey.j,
+        depth: nextKey.depth + depth,
+        found: [...found, nextKey.key],
+        length: found.length + 1
+      });
+    }
+  }
+
+  return minDepth;
 }
 
 function findPathToKeys(matrix, current, i, j) {
@@ -103,28 +170,6 @@ function findNextPositions(matrix, i, j, found) {
       const char = matrix.get(j, i);
       return char !== WALL && char !== VISITED;
     });
-}
-
-
-
-function memoization(allKeys) {
-  let memory = {};
-
-  return function (found, callback) {
-    let remaining = Array.from(difference(allKeys, found));
-    // remaining.sort();
-    let key = remaining.join();
-
-    if (_.isNumber(memory[key])) {
-      console.log('Call memory', key);
-      return memory[key];
-    } else {
-      const result = callback();
-      memory[key] = result;
-      console.log('Save to Memory', 'key', key, 'result', result);
-      return result;
-    }
-  };
 }
 
 String.prototype.isLowerCase = function () {
