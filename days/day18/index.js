@@ -1,10 +1,10 @@
 let path = require('path');
 let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
 let Matrix = require(path.join(__dirname, '..', '..', 'helpers', 'GraphMatrix'));
-let { findPathToKeys, findMain, memoization } = require('./main');
+let { findPathToKeys, findMain } = require('./main');
 let _ = require('lodash');
 
-let isTest = true;
+let isTest = false;
 const ENTRANCE = '@';
 
 function task1(data) {
@@ -25,17 +25,26 @@ function task1(data) {
 
   // Find path from a key to all other keys. Treat start as a key
   allKeys = allKeys.reduce((res, key) => {
-    const nextKeys = [];
-    findPathToKeys(_.cloneDeep(matrix), key.i, key.j, [], nextKeys, 0);
+    const nextKeys = findPathToKeys(_.cloneDeep(matrix), key.key, key.i, key.j);
 
-    res[key.key] = nextKeys;
+    res[key.key] = Object.values(nextKeys);
     return res;
   }, {});
+
+
+  // Object.entries(allKeys).forEach(([key, value]) => {
+  //   console.log('For key', key);
+  //
+  //   let sorted = _.sortBy(value, 'key');
+  //   sorted.forEach(next => {
+  //     console.log(next.key, next.depth);
+  //   });
+  // });
 
   // console.log(allKeys);
 
 
-  //Run main loop, pass nodes instead of matrix, also use caching
+  // Run main loop, pass nodes instead of matrix, also use caching
   const { x, y } = matrix.findCoordinates(ENTRANCE);
 
   return findMain(allKeys, new Map(), ENTRANCE, x, y, []);
