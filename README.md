@@ -1,5 +1,9 @@
 #### Run solution
-Run `index.js` in day# folder
+
+Comand line
+```node 2020/day1```
+
+Or run `index.js` file from the year# folder
 
 #### Helpers
-`helpers/day0` folder contains an initial template
+`helpers/day_template` folder contains an initial template
