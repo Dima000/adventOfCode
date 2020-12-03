@@ -5,7 +5,7 @@ const readFile = require(path.join(__dirname, 'readFile'));
 class Day {
   constructor(year, dayNumber, isTest, noTrim) {
     const fileName = isTest ? 'input.test.txt' : 'input.txt';
-    let inputPath = path.join(__dirname, '..', `${year}`, 'days', `day${dayNumber}`, fileName);
+    let inputPath = path.join(__dirname, '..', `${year}`, `day${dayNumber}`, fileName);
 
     this.data = readFile(inputPath, noTrim);
   }

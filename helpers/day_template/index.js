@@ -1,6 +1,6 @@
 let path = require('path');
-let Day = require(path.join(__dirname, '..', '..', '..', 'helpers', 'Day'));
-let Matrix = require(path.join(__dirname, '..', '..', '..', 'helpers', 'GraphMatrix'));
+let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
+let Matrix = require(path.join(__dirname, '..', '..', 'helpers', 'GraphMatrix'));
 let _ = require('lodash');
 
 let isTest = true;
