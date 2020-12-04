@@ -14,6 +14,6 @@ function task2(data) {
 }
 
 
-let day = new Day(2019,  2020, 0.0, isTest);
+let day = new Day(2020, 0, isTest);
 day.task(1, task1);
 day.task(2, task2);
