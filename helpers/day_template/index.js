@@ -1,19 +1,23 @@
-let path = require('path');
-let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
-let Matrix = require(path.join(__dirname, '..', '..', 'helpers', 'GraphMatrix'));
-let _ = require('lodash');
-
 let isTest = true;
 
-function task1(data) {
-  return ''
-}
-
-function task2(data) {
-  return ''
-}
-
-
+let path = require('path');
+let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
+let general = require(path.join(__dirname, '..', '..', 'helpers', 'general'));
+let _ = require('lodash');
 let day = new Day(2020, 0, isTest);
-day.task(1, task1);
-day.task(2, task2);
+day.task(1, part1);
+day.task(2, part2);
+
+/*
+* -------------------------------------------------------------------------------------
+* Solution below
+* -------------------------------------------------------------------------------------
+*/
+
+function part1(data) {
+  return ''
+}
+
+function part2(data) {
+  return ''
+}
