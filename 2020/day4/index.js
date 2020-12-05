@@ -1,9 +1,18 @@
+let isTest = false;
+
 let path = require('path');
 let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
 let { isSuperSet } = require(path.join(__dirname, '..', '..', 'helpers', 'general'));
 let _ = require('lodash');
+let day = new Day(2020, 4, isTest);
+day.task(1, task1);
+day.task(2, task2);
 
-let isTest = false;
+/*
+* -------------------------------------------------------------------------------------
+* Solution below
+* -------------------------------------------------------------------------------------
+*/
 
 const FIELD_KEYS = new Set(['byr', 'iyr', 'eyr', 'hgt', 'hcl', 'ecl', 'pid']);
 
@@ -68,8 +77,3 @@ function validHeight(height) {
   let validDigit = unit === 'cm' ? (+digit >= 150 && +digit <= 193) : (+digit >= 59 && +digit <= 76);
   return validDigit && validUnit;
 }
-
-
-let day = new Day(2020, 4, isTest);
-day.task(1, task1);
-day.task(2, task2);

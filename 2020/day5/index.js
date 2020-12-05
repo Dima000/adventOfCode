@@ -1,9 +1,18 @@
+let isTest = false;
+
 let path = require('path');
 let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
 let Matrix = require(path.join(__dirname, '..', '..', 'helpers', 'GraphMatrix'));
 let _ = require('lodash');
+let day = new Day(2020, 5, isTest);
+day.task(1, task1);
+day.task(2, task2);
 
-let isTest = false;
+/*
+* -------------------------------------------------------------------------------------
+* Solution below
+* -------------------------------------------------------------------------------------
+*/
 
 function findSeats(data) {
   return data.split('\r\n').map(fullWord => {
@@ -36,7 +45,3 @@ function task2(data) {
     }
   }
 }
-
-let day = new Day(2020, 5, isTest);
-day.task(1, task1);
-day.task(2, task2);
