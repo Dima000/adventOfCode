@@ -16,6 +16,14 @@ class Day {
     console.timeEnd(`Time task ${taskNumber}`);
     console.log();
   }
+
+  task1(callback) {
+    this.task(1, callback);
+  }
+
+  task2(callback) {
+    this.task(2, callback);
+  }
 }
 
 module.exports = Day;

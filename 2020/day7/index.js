@@ -2,11 +2,8 @@ let isTest = false;
 
 let path = require('path');
 let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
-let general = require(path.join(__dirname, '..', '..', 'helpers', 'general'));
 let _ = require('lodash');
 let day = new Day(2020, 7, isTest);
-day.task(1, part1);
-day.task(2, part2);
 
 /*
 * -------------------------------------------------------------------------------------
@@ -14,43 +11,7 @@ day.task(2, part2);
 * -------------------------------------------------------------------------------------
 */
 
-function Node(key) {
-  return {
-    key,
-    parents: {
-      // key: {
-      //  ref: node,
-      //  weight: sum
-      // }
-    },
-    children: {
-      // key: {
-      //  ref: node,
-      //  weight: sum
-      // }
-    },
-    addParent(key, ref, weight) {
-      if (this.parents[key]) {
-        return;
-      }
-
-      this.parents[key] = { ref, weight };
-    },
-    addChild(key, ref, weight) {
-      if (this.children[key]) {
-        return;
-      }
-
-      this.children[key] = { ref, weight };
-    },
-    getParent(key) {
-      return this.parents[key];
-    },
-    getChild(key) {
-      return this.children[key];
-    }
-  }
-}
+let Node = require(path.join(__dirname, '..', '..', 'helpers', 'Node'));
 
 function initNodesMap(data) {
   let nodesMap = {};
@@ -71,8 +32,8 @@ function initNodesMap(data) {
       let childNode = nodesMap[childKey] || new Node(childKey);
       nodesMap[childKey] = childNode
 
-      currentNode.addChild(childKey, childNode, +weight);
-      childNode.addParent(currentKey, currentNode, +weight);
+      currentNode.addChild(childKey, childNode, {weight: +weight});
+      childNode.addParent(currentKey, currentNode, {weight: +weight});
     }
   })
 
@@ -102,17 +63,18 @@ function computeChildWeight(node) {
 }
 
 
-function part1(data) {
+day.task1(data => {
   const nodesMap = initNodesMap(data);
 
   const parentsSet = new Set();
   collectParents(nodesMap['shiny gold'], parentsSet);
 
   return parentsSet.size;
-}
+})
 
-function part2(data) {
+
+day.task2(data => {
   const nodesMap = initNodesMap(data);
 
   return computeChildWeight(nodesMap['shiny gold']) - 1;
-}
+})
