@@ -89,13 +89,13 @@ function collectParents(node, parentsSet) {
   })
 }
 
-function computeChildWight(node) {
+function computeChildWeight(node) {
   if (Object.keys(node.children).length === 0) {
     return 1;
   }
 
   const bagWeight = _.sumBy(Object.values(node.children), child => {
-    return child.weight * computeChildWight(child.ref);
+    return child.weight * computeChildWeight(child.ref);
   })
 
   return bagWeight + 1;
@@ -114,5 +114,5 @@ function part1(data) {
 function part2(data) {
   const nodesMap = initNodesMap(data);
 
-  return computeChildWight(nodesMap['shiny gold']) - 1;
+  return computeChildWeight(nodesMap['shiny gold']) - 1;
 }
