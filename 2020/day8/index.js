@@ -24,8 +24,12 @@ function MIPS(instructions) {
     },
     run() {
       while (1) {
+        if (this.pointer < 0) {
+          return "OUT_OF_BOUNDS";
+        }
+
         if (this.visitedPointers.has(this.pointer)) {
-          return 1;
+          return "INFINITE_LOOP";
         }
 
         if (this.pointer >= this.instructions.length) {
