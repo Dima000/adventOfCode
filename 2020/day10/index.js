@@ -4,7 +4,6 @@ let path = require('path');
 let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
 let general = require(path.join(__dirname, '..', '..', 'helpers', 'general'));
 let _ = require('lodash');
-let math = require('mathjs');
 let day = new Day(2020, 10, isTest);
 
 /*
@@ -38,7 +37,9 @@ day.task1(data => {
 day.task2(data => {
   let numbers = data.split('\r\n').map(n => +n);
   numbers.sort((a, b) => a - b);
+  numbers.unshift(0);
 
+  // Find consecutive numbers sequences
   let sections = [];
   let start = 0;
   for (let i = 1; i < numbers.length; i++) {
@@ -56,7 +57,7 @@ day.task2(data => {
   }
 
   let filterSections = sections.filter(n => n.end - n.start > 2).map(({ start, end }) => {
-    const mutation = mutations(end - start, start === 0 ? 1 : 2)
+    const mutation = specialMutations(end - start)
     console.log(numbers.slice(start, end), end - start);
     console.log('result', mutation)
     return mutation
@@ -64,6 +65,10 @@ day.task2(data => {
 
   return filterSections.reduce((acc, n) => acc * n, 1)
 })
+
+function specialMutations(n) {
+  return 1 + (n - 2) + combinations(n - 2, 2)
+}
 
 function factorial(n) {
   if (n <= 1) {
@@ -82,8 +87,4 @@ function combinations(n, r) {
   }
 
   return factorial(n) / (factorial(r) * factorial(n - r))
-}
-
-function mutations(n, offset) {
-  return 1 + n - offset + combinations(n - offset, 2)
 }
