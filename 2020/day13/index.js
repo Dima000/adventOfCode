@@ -1,8 +1,7 @@
-let isTest = true;
+let isTest = false;
 
 let path = require('path');
 let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
-let general = require(path.join(__dirname, '..', '..', 'helpers', 'general'));
 let _ = require('lodash');
 let day = new Day(2020, 13, isTest);
 
@@ -35,30 +34,35 @@ day.task2(data => {
       numbers.push({ number: +n, index })
     }
   });
-  numbers.sort((a, b) => b.number - a.number);
-  let biggestNr = numbers[0];
 
-  let timestampStart = isTest ? 3000 : 100000000000000;
-  let timestamp = Math.floor(timestampStart / biggestNr.number) * biggestNr.number;
-  let k = 0;
-  while (1) {
-    if (validTimestamp(timestamp - biggestNr.index, numbers)) {
-      return timestamp;
+  let products = [];
+  for (let i = 0; i < numbers.length; i++) {
+    let prod = 1;
+    for (let j = 0; j < numbers.length; j++) {
+      if (i !== j) {
+        prod *= numbers[j].number;
+      }
     }
-
-    if (k % 100000000 === 0) {
-      console.log('100M numbers', timestamp)
-    }
-    timestamp += biggestNr.number;
-    k += 1;
+    products.push(prod);
   }
+
+  console.log(numbers);
+  products = products.map((p, i) => {
+    let number = numbers[i];
+    let newP = p;
+
+    while (newP % number.number !== number.index % number.number) {
+      newP += p;
+    }
+    return newP;
+  })
+
+  let sum = _.sum(products);
+  let prod = numbers.reduce((res, n) => res * n.number, 1);
+
+  while (sum > 0) {
+    sum = sum - prod;
+  }
+
+  return Math.abs(sum);
 })
-
-function validTimestamp(timestamp, numbers) {
-  for (let i = 1; i < numbers.length; i++) {
-    if (((timestamp + numbers[i].index) % numbers[i].number) !== 0) {
-      return false;
-    }
-  }
-  return true;
-}
