@@ -15,14 +15,14 @@ let day = new Day(2020, 15, isTest);
 function spokenNumber(data, limit) {
   let numbers = data.split(',').map(n => +n);
   let numbersMap = data.split(',').reduce((res, number, index) => {
-    res[number] = [index];
+    res.set(+number, [index]);
     return res;
-  }, {});
+  }, new Map());
 
   let i = numbers.length;
   let lastNumber = numbers[i - 1];
   while (i < limit) {
-    const encounterLast = numbersMap[lastNumber] || [];
+    const encounterLast = numbersMap.get(lastNumber) || [];
     let spoken = -1;
 
     if (encounterLast.length < 2) {
@@ -31,12 +31,12 @@ function spokenNumber(data, limit) {
       spoken = encounterLast[encounterLast.length - 1] - encounterLast[encounterLast.length - 2];
     }
 
-    let encounterSpoken = numbersMap[spoken] || [];
+    let encounterSpoken = numbersMap.get(spoken) || [];
     if (encounterSpoken.length === 2) {
-      numbersMap[spoken] = [encounterSpoken[1], i];
+      numbersMap.set(spoken, [encounterSpoken[1], i]);
     } else {
       encounterSpoken.push(i);
-      numbersMap[spoken] = encounterSpoken;
+      numbersMap.set(spoken, encounterSpoken);
     }
     lastNumber = spoken;
     i += 1;
