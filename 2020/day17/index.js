@@ -1,4 +1,4 @@
-let isTest = true;
+let isTest = false;
 
 let path = require('path');
 let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
@@ -16,11 +16,12 @@ class Matrix {
   constructor(dimensions, lines = [[]]) {
     this.matrix = {};
     this.nrOfDimensions = dimensions;
+    let extraArguments = dimensions === 3 ? [0] : [0,0]
 
     for (let x = 0; x < lines.length; x++) {
       for (let y = 0; y < lines[0].length; y++) {
         let value = lines[x][y] === '#' ? 1 : 0;
-        this.set(value, x, y, 0);
+        this.set(value, x, y, ...extraArguments);
       }
     }
   }
@@ -52,13 +53,13 @@ class Matrix {
     return boundaries;
   }
 
-  printZ() {
+  printZ(...restDimensions) {
     let [xBoundaries, yBoundaries] = this.getBoundaries();
 
     for (let x = xBoundaries[0]; x <= xBoundaries[1]; x++) {
       let line = [];
       for (let y = yBoundaries[0]; y <= yBoundaries[1]; y++) {
-        line.push(this.get(x, y, 0) ? '#' : '.');
+        line.push(this.get(x, y, ...restDimensions) ? '#' : '.');
       }
       console.log(line.join(''))
     }
@@ -66,22 +67,22 @@ class Matrix {
 }
 
 day.task1(data => {
-  // let matrix = new Matrix(3, data.split('\r\n'));
-  // // matrix.printZ();
-  //
-  // let k = 1;
-  // while (k <= 6) {
-  //   matrix = generateState3(matrix);
-  //   // matrix.printZ();
-  //   k += 1;
-  // }
-  //
-  // return _.sum(Object.values(matrix.matrix));
+  let matrix = new Matrix(3, data.split('\r\n'));
+  // matrix.printZ();
+
+  let k = 1;
+  while (k <= 6) {
+    matrix = generateState3(matrix);
+    // matrix.printZ();
+    k += 1;
+  }
+
+  return _.sum(Object.values(matrix.matrix));
 })
 
 day.task2(data => {
   let matrix = new Matrix(4, data.split('\r\n'));
-
+  // matrix.printZ(0, 0);
 
   let k = 1;
   while (k <= 6) {
