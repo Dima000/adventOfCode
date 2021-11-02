@@ -1,8 +1,7 @@
-let isTest = true;
+let isTest = false;
 
 let path = require('path');
 let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
-let general = require(path.join(__dirname, '..', '..', 'helpers', 'general'));
 let _ = require('lodash');
 let day = new Day(2020, 20, isTest);
 
@@ -15,41 +14,53 @@ let day = new Day(2020, 20, isTest);
 
 class PuzzlePiece {
     id;
-    image;
-
-    top = null;
-    bottom = null;
-    left = null;
-    right = null;
+    tPiece = null;
+    bPiece = null;
+    lPiece = null;
+    rPiece = null;
 
     constructor(data) {
         const lines = data.split('\r\n');
         this.id = parseInt(lines[0].match(/\d+/));
+        lines.shift();
 
-        this.image = [];
-        for (let i = 1; i < lines.length; i++) {
-            this.image.push(lines[i])
+        this.t = lines[0];
+        this.b = lines[lines.length - 1];
+        this.l = this.getVerticalLine(lines, 0);
+        this.r = this.getVerticalLine(lines, lines[0].length - 1);
+        this.ft = this.reverseString(this.t);
+        this.fb = this.reverseString(this.b);
+        this.fl = this.reverseString(this.l);
+        this.fr = this.reverseString(this.r);
+    }
+
+    get vertices() {
+        return [this.t, this.b, this.l, this.r, this.ft, this.fb, this.fl, this.fr];
+    }
+
+    getVerticalLine(lines, index) {
+        let s = '';
+        for (const line of lines) {
+            s += line[index];
         }
+        return s;
     }
 
-    get borderTop() {
-        return this.image[0];
+    reverseString(s) {
+        return s.split('').reverse().join('');
     }
 
-    get borderRight() {
-        return this.image
-            .map(line => line[line.length - 1])
-            .join('');
+    setMatch({ t, b, r, l }) {
+        this.tPiece = this.tPiece || t;
+        this.bPiece = this.bPiece || b;
+        this.lPiece = this.lPiece || l;
+        this.rPiece = this.rPiece || r;
     }
 
-    get borderBottom() {
-        return this.image[this.image.length - 1];
-    }
-
-    get borderLeft() {
-        return this.image
-            .map(line => line[0])
-            .join('');
+    getMatchedCount() {
+        return [this.tPiece, this.bPiece, this.lPiece, this.rPiece]
+            .filter(matched => matched)
+            .length;
     }
 }
 
@@ -59,18 +70,47 @@ day.task1(data => {
         .split('\r\n\r\n')
         .map(pieceData => new PuzzlePiece(pieceData));
 
-    return '';
+    matchPuzzles(puzzles);
+
+    const corners = puzzles.filter(p => p.getMatchedCount() === 2);
+    return corners.reduce((acc, piece) => acc * piece.id, 1);
 })
 
 day.task2(data => {
     return '';
 })
 
-/*
-1) DONE - Read data and add it in structures Puzzle piece
-2) Write alg to take one piece and try to find all 4 corners of it
-3) write function to compare 2 pieces and see if they match
-4) write function to flip/rotate piece after matched is found
-5) link pieces between themselves, save found pieces in a map
-
+/**
+ * Iterate all puzzle pieces and assign match to the 4 vertices
  */
+function matchPuzzles(puzzlePieces) {
+    for (let i = 0; i < puzzlePieces.length; i++) {
+        const piece = puzzlePieces[i];
+
+        for (let k = 0; k < puzzlePieces.length; k++) {
+            if (i === k) {
+                continue;
+            }
+
+            const match = findMatch(piece, puzzlePieces[k]);
+            piece.setMatch(match);
+        }
+    }
+}
+
+
+function findMatch(piece, matchPiece) {
+    let directions = matchPiece.vertices;
+
+    const t = directions.includes(piece.t);
+    const b = directions.includes(piece.b);
+    const l = directions.includes(piece.l);
+    const r = directions.includes(piece.r);
+
+    return {
+        t: t ? matchPiece.id : null,
+        b: b ? matchPiece.id : null,
+        l: l ? matchPiece.id : null,
+        r: r ? matchPiece.id : null,
+    }
+}
