@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "lodash": "^4.17.20",
-    "mathjs": "^8.0.1"
+    "mathjs": "^10.0.0"
   },
   "devDependencies": {
     "jest": "^27.0.6"
