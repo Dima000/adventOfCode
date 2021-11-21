@@ -205,6 +205,9 @@ day.task1(data => {
         }, new Map());
 
     connectPuzzlePiece(firstPuzzle, puzzleMap);
+
+    debugger;
+
     return Array
         .from(puzzleMap.values())
         .filter(puzzle => {
