@@ -1,4 +1,4 @@
-let isTest = true;
+let isTest = false;
 
 let path = require('path');
 let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
@@ -135,42 +135,6 @@ class Puzzle {
     }
 }
 
-day.task1(data => {
-    let firstPuzzle = null;
-    const puzzleMap: Map<number, Puzzle> = data
-        .split('\r\n\r\n')
-        .map(pieceData => {
-            const lines = pieceData.split('\r\n');
-            const id = parseInt(lines[0].match(/\d+/));
-            lines.shift();
-            const puzzle = new Puzzle(id, lines);
-            firstPuzzle = firstPuzzle || puzzle;
-            return puzzle;
-        })
-        .reduce((acc, puzzle) => {
-            acc.set(puzzle.id, puzzle);
-            return acc;
-        }, new Map());
-
-    connectPuzzlePiece(firstPuzzle, puzzleMap);
-    const corners = Array
-        .from(puzzleMap.values())
-        .filter(puzzle => {
-            const connections = Puzzle.DIRECTIONS.reduce((acc, dir) => {
-                return acc + (puzzle[dir].connection ? 1 : 0);
-            }, 0)
-
-            return connections === 2;
-        })
-        .map(p => p.id);
-
-    return corners;
-})
-
-day.task2(data => {
-    return '';
-})
-
 function connectPuzzlePiece(puzzle: Puzzle, puzzleMap: Map<number, Puzzle>) {
     if (puzzle.checked) {
         return;
@@ -222,3 +186,38 @@ function findMatch(puzzle: Puzzle, allPuzzles: Map<number, Puzzle>, dir: Dir): M
         }
     }
 }
+
+day.task1(data => {
+    let firstPuzzle = null;
+    const puzzleMap: Map<number, Puzzle> = data
+        .split('\r\n\r\n')
+        .map(pieceData => {
+            const lines = pieceData.split('\r\n');
+            const id = parseInt(lines[0].match(/\d+/));
+            lines.shift();
+            const puzzle = new Puzzle(id, lines);
+            firstPuzzle = firstPuzzle || puzzle;
+            return puzzle;
+        })
+        .reduce((acc, puzzle) => {
+            acc.set(puzzle.id, puzzle);
+            return acc;
+        }, new Map());
+
+    connectPuzzlePiece(firstPuzzle, puzzleMap);
+    return Array
+        .from(puzzleMap.values())
+        .filter(puzzle => {
+            const connections = Puzzle.DIRECTIONS.reduce((acc, dir) => {
+                return acc + (puzzle[dir].connection ? 1 : 0);
+            }, 0)
+
+            return connections === 2;
+        })
+        .map(p => p.id)
+        .reduce((acc, id) => acc * id, 1);
+})
+
+day.task2(data => {
+    return '';
+})
