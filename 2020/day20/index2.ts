@@ -2,6 +2,7 @@ let isTest = false;
 
 let path = require('path');
 let Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
+let GraphMatrix = require(path.join(__dirname, '..', '..', 'helpers', 'GraphMatrix'));
 let _ = require('lodash');
 let mathjs = require('mathjs');
 let day = new Day(2020, 20, isTest);
@@ -14,8 +15,10 @@ let day = new Day(2020, 20, isTest);
 interface Side {
     key: string;
     counterKey: string;
-    connection: Puzzle | null;
+    connection: Connection;
 }
+
+type Connection = Puzzle | null | 'BORDER';
 
 type Dir = 'T' | 'R' | 'B' | 'L';
 
@@ -74,7 +77,7 @@ class Puzzle {
         this.lines = lines;
     }
 
-    static getSide(key, connection: Puzzle | null): Side {
+    static getSide(key, connection: Connection): Side {
         return {
             key,
             counterKey: key.split('').reverse().join(''),
@@ -95,11 +98,11 @@ class Puzzle {
     static rotatePuzzle(puzzleDir: Dir, { match, dir, flip }: Match): Puzzle {
         const puzzleDirIndex = Puzzle.DIRECTIONS.indexOf(puzzleDir);
         const matchDirIndex = Puzzle.DIRECTIONS.indexOf(dir);
-        const rotationAngle = ((matchDirIndex - puzzleDirIndex + 2 + 4) % 4) * 90;
+        const rotationAngle = ((matchDirIndex - puzzleDirIndex + 4) % 4) * 90;
 
         let lines: string[][] = match.lines.map(line => line.split(''));
         if (flip) {
-            lines = Puzzle.flipMatrix(lines);
+            lines = Puzzle.flipMatrix(lines, puzzleDir === 'L' || puzzleDir === 'R');
         }
         if (rotationAngle === 90) {
             lines = Puzzle.rotate90(lines);
@@ -125,11 +128,13 @@ class Puzzle {
         return mathjs.transpose(reversed);
     }
 
-    static flipMatrix(matrix: string[][]): string[][] {
-        return matrix.map(row => [...row].reverse());
+    static flipMatrix(matrix: string[][], vertical: boolean): string[][] {
+        return vertical
+            ? matrix.reverse()
+            : matrix.map(row => [...row].reverse());
     }
 
-    static oppositeDir(dir: Dir): string {
+    static oppositeDir(dir: Dir): Dir {
         const oppositeIndex = (Puzzle.DIRECTIONS.indexOf(dir) + 2) % 4;
         return Puzzle.DIRECTIONS[oppositeIndex];
     }
@@ -140,25 +145,35 @@ function connectPuzzlePiece(puzzle: Puzzle, puzzleMap: Map<number, Puzzle>) {
         return;
     }
     puzzle.checked = true;
+    console.log();
+    console.log('start', puzzle.id);
 
-    Puzzle.DIRECTIONS.forEach(dir => {
-        if (!puzzle[dir].connection) {
+    Puzzle.DIRECTIONS
+        .filter(dir => puzzle[dir].connection === null)
+        .forEach(dir => {
+            if (puzzle.id === 4) {
+                debugger;
+            }
+
             const matchObj = findMatch(puzzle, puzzleMap, dir);
             if (matchObj) {
-                const newMatch = Puzzle.rotatePuzzle(dir, matchObj);
+                const oppositeDir = Puzzle.oppositeDir(dir);
+                const newMatch = Puzzle.rotatePuzzle(oppositeDir, matchObj);
                 puzzle[dir].connection = newMatch;
-                const matchDir = Puzzle.oppositeDir(dir);
-                newMatch[matchDir].connection = puzzle;
+                newMatch[oppositeDir].connection = puzzle;
                 puzzleMap.set(newMatch.id, newMatch);
+                console.log('assign', newMatch.id, 'dir', dir);
+            } else {
+                puzzle[dir].connection = 'BORDER';
+                console.log('assign BORDER dir', dir);
             }
-        }
-    });
+        });
 
-    Puzzle.DIRECTIONS.forEach(dir => {
-        if (puzzle[dir].connection) {
-            connectPuzzlePiece(puzzle[dir].connection, puzzleMap);
-        }
-    })
+    Puzzle.DIRECTIONS
+        .filter(dir => puzzle[dir].connection && puzzle[dir].connection !== 'BORDER')
+        .forEach(dir => {
+            connectPuzzlePiece(puzzle[dir].connection as Puzzle, puzzleMap);
+        })
 }
 
 function findMatch(puzzle: Puzzle, allPuzzles: Map<number, Puzzle>, dir: Dir): Match | null {
@@ -187,13 +202,40 @@ function findMatch(puzzle: Puzzle, allPuzzles: Map<number, Puzzle>, dir: Dir): M
     }
 }
 
+function printPuzzle(puzzle: Puzzle) {
+    const matrix = new GraphMatrix();
+    const visited = new Set<number>();
+
+    collectPuzzle(0, 0, puzzle, matrix, visited);
+    matrix.print();
+}
+
+function collectPuzzle(x: number, y: number, puzzle: Puzzle | 'BORDER', matrix: typeof GraphMatrix, visited: Set<number>) {
+    if (puzzle === 'BORDER') {
+        matrix.set(x, y, '.');
+        return;
+    }
+
+    if (visited.has(puzzle.id)) {
+        return;
+    }
+
+    debugger;
+    matrix.set(x, y, puzzle.id);
+    visited.add(puzzle.id);
+    collectPuzzle(x, y - 1, puzzle.T.connection, matrix, visited);
+    collectPuzzle(x, y + 1, puzzle.B.connection, matrix, visited);
+    collectPuzzle(x + 1, y, puzzle.R.connection, matrix, visited);
+    collectPuzzle(x - 1, y, puzzle.L.connection, matrix, visited);
+}
+
 day.task1(data => {
     let firstPuzzle = null;
     const puzzleMap: Map<number, Puzzle> = data
         .split('\r\n\r\n')
-        .map(pieceData => {
+        .map((pieceData, index) => {
             const lines = pieceData.split('\r\n');
-            const id = parseInt(lines[0].match(/\d+/));
+            const id = index;
             lines.shift();
             const puzzle = new Puzzle(id, lines);
             firstPuzzle = firstPuzzle || puzzle;
@@ -204,21 +246,22 @@ day.task1(data => {
             return acc;
         }, new Map());
 
+
     connectPuzzlePiece(firstPuzzle, puzzleMap);
 
-    debugger;
+    printPuzzle(firstPuzzle);
 
-    return Array
-        .from(puzzleMap.values())
-        .filter(puzzle => {
-            const connections = Puzzle.DIRECTIONS.reduce((acc, dir) => {
-                return acc + (puzzle[dir].connection ? 1 : 0);
-            }, 0)
-
-            return connections === 2;
-        })
-        .map(p => p.id)
-        .reduce((acc, id) => acc * id, 1);
+    // return Array
+    //     .from(puzzleMap.values())
+    //     .filter(puzzle => {
+    //         const borders = Puzzle.DIRECTIONS.reduce((acc, dir) => {
+    //             return acc + (puzzle[dir].connection === 'BORDER' ? 1 : 0);
+    //         }, 0)
+    //
+    //         return borders >= 2;
+    //     })
+    //     .map(p => p.id)
+    // .reduce((acc, id) => acc * id, 1);
 })
 
 day.task2(data => {

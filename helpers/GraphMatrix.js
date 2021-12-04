@@ -89,8 +89,11 @@ class GraphMatrix {
         if (replaces.hasOwnProperty(val)) {
           val = replaces[val];
         }
+        if(y === 0 && x ===0) {
+          debugger;
+        }
 
-        process.stdout.write((val || ' ').toString())
+        process.stdout.write((val ?? ' ').toString() + `\t`)
       }
       console.log();
     }
