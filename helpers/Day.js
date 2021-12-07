@@ -3,11 +3,15 @@ const { logResult } = require(path.join(__dirname, 'general'));
 const readFile = require(path.join(__dirname, 'readFile'));
 
 class Day {
-  constructor(year, dayNumber, isTest, noTrim) {
+  constructor(year, dayNumber, isTest, noTrim, task1, task2) {
     const fileName = isTest ? 'input.test.txt' : 'input.txt';
     let inputPath = path.join(__dirname, '..', `${year}`, `day${dayNumber}`, fileName);
 
     this.data = readFile(inputPath, noTrim);
+    if(task1 && task2) {
+      this.task1(task1);
+      this.task2(task2);
+    }
   }
 
   task(taskNumber, callback) {
