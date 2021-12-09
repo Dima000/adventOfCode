@@ -8,8 +8,10 @@ class Day {
     let inputPath = path.join(__dirname, '..', `${year}`, `day${dayNumber}`, fileName);
 
     this.data = readFile(inputPath, noTrim);
-    if(task1 && task2) {
+    if(task1) {
       this.task1(task1);
+    }
+    if(task2) {
       this.task2(task2);
     }
   }
