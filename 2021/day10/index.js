@@ -23,7 +23,7 @@ const VALUE_MAP_2 = {
 function task1(data) {
     return data
         .split('\r\n')
-        .map(findCorruptedChar)
+        .map(parseLine)
         .filter(value => value.errorChar)
         .reduce((sum, value) => sum + VALUE_MAP[value.errorChar], 0);
 }
@@ -31,7 +31,7 @@ function task1(data) {
 function task2(data) {
     const sortedValues = data
         .split('\r\n')
-        .map(findCorruptedChar)
+        .map(parseLine)
         .filter(value => value.endingChars)
         .map(value => value.endingChars.reduce((acc, char) => acc * 5 + VALUE_MAP_2[char], 0))
         .sort((a, b) => a - b);
@@ -39,7 +39,7 @@ function task2(data) {
     return sortedValues[Math.floor(sortedValues.length / 2)];
 }
 
-function findCorruptedChar(line) {
+function parseLine(line) {
     const start = ['(', '[', '{', '<'];
     const end = [')', ']', '}', '>'];
     const times = [0, 0, 0, 0];
@@ -64,9 +64,7 @@ function findCorruptedChar(line) {
         }
     }
 
-    return {
-        endingChars: last.reverse().map((char) => end[start.indexOf(char)])
-    }
+    return { endingChars: last.reverse().map((char) => end[start.indexOf(char)]) }
 }
 
 new Day(2021, 10, isTest, false, task1, task2);
