@@ -34,10 +34,10 @@ function task2(data) {
     let step = 0;
     while (1) {
         stepIncrement(matrix);
-        stepFlash(matrix);
+        const flashedThisStep = stepFlash(matrix);
         step += 1;
 
-        if (matrix.entries().every(item => item[1] === 0)) {
+        if (flashedThisStep === 100) {
             return step;
         }
     }
