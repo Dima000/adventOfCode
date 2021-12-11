@@ -69,7 +69,7 @@ class GraphMatrix {
   }
 
 
-  print(replaces = {}) {
+  print(replaces = {}, tabbed) {
     let maxX = 0;
     let maxY = 0;
     let minX = Number.MAX_SAFE_INTEGER;
@@ -93,7 +93,7 @@ class GraphMatrix {
           debugger;
         }
 
-        process.stdout.write((val ?? ' ').toString() + `\t`)
+        process.stdout.write((val ?? ' ').toString() + (tabbed ? `\t` : ''))
       }
       console.log();
     }
