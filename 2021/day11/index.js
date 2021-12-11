@@ -78,7 +78,6 @@ function stepFlash(matrix) {
             flashToNeighbor(i - 1, j + 1, flashedItems, matrix);
 
             flashToNeighbor(i, j - 1, flashedItems, matrix);
-            flashToNeighbor(i, j + 0, flashedItems, matrix);
             flashToNeighbor(i, j + 1, flashedItems, matrix);
 
             flashToNeighbor(i + 1, j - 1, flashedItems, matrix);
