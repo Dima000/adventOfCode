@@ -6,6 +6,7 @@ const Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
 // -------------------------------------------------------------------------------------
 
 function task1(data) {
+    data.split('\r\n');
     return '';
 }
 
