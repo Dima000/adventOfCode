@@ -1,0 +1,19 @@
+name: Update 2018 README ⭐
+on:
+  schedule:
+    - cron: "0 18 * * 1"  # Every Monday at 18:00
+  workflow_dispatch:
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: k2bd/advent-readme-stars@v1
+        with:
+          userId: 108802
+          sessionCookie: ${{ secrets.AOC_SESSION }}
+          tableMaker: "<!--- advent_readme_stars_2018 table --->"
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update README stars
