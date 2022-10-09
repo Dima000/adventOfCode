@@ -1,3 +1,5 @@
+<!--- advent_readme_stars table --->
+
 #### Run solution
 
 Comand line
