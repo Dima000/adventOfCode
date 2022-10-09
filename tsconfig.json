@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "sourceMap": false,
+    "target": "ESNext",
+    "noImplicitAny": false,
+    "suppressImplicitAnyIndexErrors": true,
+  }
+}
