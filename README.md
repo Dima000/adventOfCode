@@ -1,17 +1,13 @@
 # Stats
-<!--- advent_readme_stars_2021 table --->
-
-<!--- advent_readme_stars_2020 table --->
-
-<!--- advent_readme_stars_2019 table --->
-
-<!--- advent_readme_stars_2018 table --->
-
-<!--- advent_readme_stars_2017 table --->
-
-<!--- advent_readme_stars_2016 table --->
-
-<!--- advent_readme_stars_2015 table --->
+<article>
+<div class="eventlist-event"><a href="/">[2021]</a> <span class="star-count">26*</span></div>
+<div class="eventlist-event"><a href="/2020">[2020]</a> <span class="star-count">42*</span></div>
+<div class="eventlist-event"><a href="/2019">[2019]</a> <span class="star-count">37*</span></div>
+<div class="eventlist-event"><a href="/2018">[2018]</a> <span class="star-count">28*</span></div>
+<div class="eventlist-event"><a href="/2017">[2017]</a> <span class="star-count">26*</span></div>
+<div class="eventlist-event"><a href="/2016">[2016]</a> <span class="star-count">21*</span></div>
+<div class="eventlist-event"><a href="/2015">[2015]</a>    </div>
+<p>Total stars: <span class="star-count">180*</span></p></article>
 
 #### Run solution
 
