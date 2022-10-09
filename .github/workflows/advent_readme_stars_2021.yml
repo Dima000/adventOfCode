@@ -1,7 +1,7 @@
 name: Update README ⭐
 on:
   schedule:
-    - cron: "51 */4 * * *"  # Every 4 hours
+    - cron: "0 21 * * 1"  # Every Monday at 21:00
   workflow_dispatch:
 
 jobs:
@@ -13,6 +13,7 @@ jobs:
         with:
           userId: 108802
           sessionCookie: ${{ secrets.AOC_SESSION }}
+          tableMaker: "<!--- advent_readme_stars_2021 table --->"
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: Update README stars
