@@ -1,6 +1,5 @@
-let isTest = true;
 const path = require('path');
-const Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
+const DayNew = require(path.join(__dirname, '..', '..', 'helpers', 'DayNew'));
 
 // Solution below
 // -------------------------------------------------------------------------------------
@@ -14,4 +13,4 @@ function task2(data) {
     return '';
 }
 
-new Day(2021, 0, isTest, false, task1, task2);
+new DayNew(2022, 0, task1, task2);

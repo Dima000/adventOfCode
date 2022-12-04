@@ -1,6 +1,6 @@
 let isTest = false;
 const path = require('path');
-const Day = require(path.join(__dirname, '..', '..', 'helpers', 'Day'));
+const DayNew = require(path.join(__dirname, '..', '..', 'helpers', 'DayNew'));
 
 // Solution below
 // -------------------------------------------------------------------------------------
@@ -22,8 +22,4 @@ function task1(data) {
     return maxims.at(-1) + maxims.at(-2) + maxims.at(-3);
 }
 
-function task2(data) {
-    return '';
-}
-
-new Day(2022, 1, isTest, false, task1, task2);
+new DayNew(2022, 2, task1);
