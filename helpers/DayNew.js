@@ -14,8 +14,8 @@ class DayNew {
             this.task(task1, 1, data, showTime, false);
         }
         if (task2) {
-            this.task(task2, 2, dataTest);
-            this.task(task2, 2, data, false);
+            this.task(task2, 2, dataTest, showTime);
+            this.task(task2, 2, data, showTime, false);
         }
     }
 

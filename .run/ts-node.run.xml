@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="ts-node" type="NodeJSConfigurationType" node-parameters="--require ts-node/register" path-to-js-file="2020/day21/index.ts" working-dir="$PROJECT_DIR$">
+  <configuration default="false" name="ts-node" type="NodeJSConfigurationType" node-parameters="--require ts-node/register" path-to-js-file="$PROJECT_DIR$/2022/day2/index.js" working-dir="$PROJECT_DIR$">
     <method v="2" />
   </configuration>
 </component>
