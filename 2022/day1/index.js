@@ -1,11 +1,10 @@
-let isTest = false;
 const path = require('path');
 const DayNew = require(path.join(__dirname, '..', '..', 'helpers', 'DayNew'));
 
 // Solution below
 // -------------------------------------------------------------------------------------
 
-function task1(data) {
+function task2(data) {
     const groups = data.split('\r\n\r\n');
 
     const groupNr = groups.map(g => {
@@ -22,4 +21,4 @@ function task1(data) {
     return maxims.at(-1) + maxims.at(-2) + maxims.at(-3);
 }
 
-new DayNew(2022, 2, task1);
+new DayNew(2022, 1, null, task2);
