@@ -33,7 +33,7 @@ class GraphMatrix {
     }
 
     const [y, x] = entry[0].split('#').map(n => +n);
-    return { x, y };
+    return {x, y};
   }
 
   entries() {
@@ -68,8 +68,7 @@ class GraphMatrix {
     }
   }
 
-
-  print(replaces = {}, tabbed) {
+  getMatrixRange() {
     let maxX = 0;
     let maxY = 0;
     let minX = Number.MAX_SAFE_INTEGER;
@@ -83,13 +82,20 @@ class GraphMatrix {
       minY = Math.min(y, minY);
     });
 
+    return {x: [minX, maxX], y: [minY, maxY]};
+  }
+
+
+  print(replaces = {}, tabbed) {
+    const {x: [minX, maxX], y: [minY, maxY]} = this.getMatrixRange();
+
     for (let y = minY; y <= maxY; y++) {
       for (let x = minX; x <= maxX; x++) {
         let val = this.get(x, y);
         if (replaces.hasOwnProperty(val)) {
           val = replaces[val];
         }
-        if(y === 0 && x ===0) {
+        if (y === 0 && x === 0) {
           debugger;
         }
 

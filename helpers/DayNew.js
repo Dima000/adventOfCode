@@ -21,7 +21,7 @@ class DayNew {
 
     task(callback, taskNumber, data, showTime, isTest) {
         console.time(`Time ${isTest ? 'test' : ''} part ${taskNumber}`);
-        console.log(`${isTest ? 'Test part' : 'Part'} ${taskNumber}:\x1b[36m`, callback(data), '\x1b[0m');
+        console.log(`${isTest ? 'Test part' : 'Part'} ${taskNumber}:\x1b[36m`, callback(data, isTest), '\x1b[0m');
         if (showTime) {
             console.timeEnd(`Time ${isTest ? 'test' : ''} part ${taskNumber}`);
         }
