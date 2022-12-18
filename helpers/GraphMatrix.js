@@ -87,10 +87,13 @@ class GraphMatrix {
 
 
   print(replaces = {}, tabbed) {
-    const {x: [minX, maxX], y: [minY, maxY]} = this.getMatrixRange();
+    const {x, y} = this.getMatrixRange();
+    this.printRanges(x, y);
+  }
 
-    for (let y = minY; y <= maxY; y++) {
-      for (let x = minX; x <= maxX; x++) {
+  printRanges([x1, x2], [y1, y2], replaces = {}, tabbed) {
+    for (let y = y1; y <= y2; y++) {
+      for (let x = x1; x <= x2; x++) {
         let val = this.get(x, y);
         if (replaces.hasOwnProperty(val)) {
           val = replaces[val];
@@ -103,7 +106,6 @@ class GraphMatrix {
       }
       console.log();
     }
-
   }
 }
 
