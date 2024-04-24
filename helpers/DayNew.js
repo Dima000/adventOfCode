@@ -2,7 +2,7 @@ let path = require('path');
 const readFile = require(path.join(__dirname, 'readFile'));
 
 class DayNew {
-    constructor(year, dayNumber, task1, task2, noTrim, showTime) {
+    constructor(year, dayNumber, task1, task2, noTrim, showTime, onlyTest) {
         let inputPathTest = path.join(__dirname, '..', `${year}`, `day${dayNumber}`, 'input.test.txt');
         let inputPath = path.join(__dirname, '..', `${year}`, `day${dayNumber}`, 'input.txt');
 
@@ -11,11 +11,15 @@ class DayNew {
 
         if (task1) {
             this.task(task1, 1, dataTest, showTime, true);
-            this.task(task1, 1, data, showTime, false);
+            if(!onlyTest) {
+                this.task(task1, 1, data, showTime, false);
+            }
         }
         if (task2) {
             this.task(task2, 2, dataTest, showTime, true);
-            this.task(task2, 2, data, showTime, false);
+            if(!onlyTest) {
+                this.task(task2, 2, data, showTime, false);
+            }
         }
     }
 
