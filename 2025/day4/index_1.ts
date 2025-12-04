@@ -1,6 +1,5 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
-import { number } from "mathjs";
 
 /* READ FILE CONTENTS */
 const isTest = process.argv.slice(2).includes('--test');
